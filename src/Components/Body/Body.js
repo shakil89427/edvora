@@ -68,7 +68,7 @@ const Body = () => {
                 : bodyStyles.buttonInActive
             }
           >
-            Nearest rides ({nearestRides.length})
+            Nearest rides
           </p>
           <p
             onClick={() => setActive("Upcoming rides")}
