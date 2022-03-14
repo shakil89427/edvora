@@ -7,7 +7,7 @@ export const headerStyles = {
 };
 
 export const bodyStyles = {
-  bodyMain: "mx-2 md:mx-10 py-2 md:py-5",
+  bodyMain: "mx-3 md:mx-10 py-2 md:py-5",
   bodyHeadWrapper: "flex items-center justify-between relative",
 };
 
@@ -32,9 +32,9 @@ export const filterStyles = {
 
 export const showRideStyles = {
   main: "flex flex-col md:flex-row justify-between bg-[#171717] p-3 md:p-5 my-4 rounded-lg",
-  leftMain: "flex items-center gap-4 text-[#b9b4b4] mb-2 md:mb-0",
-  img: "w-64 h-36",
+  leftMain: "flex items-center gap-4 text-[#b9b4b4] mb-2 md:mb-0 pb-2 mb:pb-0",
+  img: "w-fit h-fit",
   spec: "ml-1 text-white",
-  locationMain: "flex gap-5",
+  locationMain: "flex gap-2 lg:gap-5 justify-center",
   location: "bg-[#0a0a0a] h-fit rounded-lg px-3",
 };
