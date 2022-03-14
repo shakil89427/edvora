@@ -24,7 +24,15 @@ const ShowRides = ({ rides }) => {
               <p>
                 Station_Path :
                 <span className={showRideStyles.spec}>
-                  {ride?.station_path}
+                  [
+                  {ride?.station_path.map((station) => {
+                    return (
+                      <span key={Math.random() * 1000} className="mx-1">
+                        {station},
+                      </span>
+                    );
+                  })}
+                  ]
                 </span>
               </p>
               <p>

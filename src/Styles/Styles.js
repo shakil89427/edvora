@@ -8,7 +8,10 @@ export const headerStyles = {
 
 export const bodyStyles = {
   bodyMain: "mx-10 py-5",
-  bodyHeadWrapper: "flex items-center justify-between",
+  bodyHeadWrapper: "flex items-center justify-between relative",
+};
+
+export const navigatorStyles = {
   buttonWrapper: "flex items-center gap-7 text-[#b9b4b4]",
   buttonActive: "border-b-2 text-white",
   buttonInActive: "cursor-pointer",

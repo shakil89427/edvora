@@ -1,104 +1,172 @@
 import React, { useEffect, useState } from "react";
-import { FilterLeft } from "react-bootstrap-icons";
 import { bodyStyles } from "../../Styles/Styles";
 import useStore from "../../Store/useStore";
 import ShowRides from "../ShowRides/ShowRides";
+import Filter from "../Filter/Filter";
+import Navigator from "../Navigator/Navigator";
 
 const Body = () => {
-  const { user, rides } = useStore();
-  const [nearestRides, setNearestRides] = useState([]);
-  const [upcomingRides, setUpcomingRides] = useState([]);
-  const [pastRides, setPastRides] = useState([]);
+  const { nearestRides, upcomingRides, pastRides } = useStore();
+  const [currentData, setCurrentData] = useState([]);
+  const [showData, setShowData] = useState([]);
+  const [states, setStates] = useState([]);
+  const [cities, setCities] = useState([]);
   const [active, setActive] = useState("Nearest rides");
+  const [filterby, setFilterby] = useState({
+    state: null,
+    city: null,
+  });
+  const [activeFilter, setActiveFilter] = useState(false);
+  const [activeState, setActiveState] = useState(false);
+  const [activeCity, setActiveCity] = useState(false);
 
-  /* Filter Nearest Rides */
-  const nearest = () => {
-    let oldData = [...rides];
-    const tempRides = [];
-
-    while (oldData.length !== 0) {
-      const closestRide = oldData.reduce((a, b) => {
-        return Math.abs(b?.closest - user.station_code) <
-          Math.abs(a?.closest - user.station_code)
-          ? b
-          : a;
-      });
-      tempRides.push(closestRide);
-      oldData = oldData.filter((ride) => ride.id !== closestRide.id);
+  const getFilterState = (e) => {
+    setActiveFilter(false);
+    setActiveState(false);
+    setActiveCity(false);
+    const newData = { ...filterby };
+    if (e.target.innerText === "All States") {
+      newData.state = null;
+      newData.city = null;
+      return setFilterby(newData);
     }
-
-    /* Filtering only upcoming Nearest ride */
-    setNearestRides(
-      tempRides.filter(
-        (ride) => Date.parse(ride?.date) > Date.parse(new Date())
-      )
-    );
+    newData.state = e.target.innerText;
+    newData.city = null;
+    setFilterby(newData);
   };
 
-  /* Filter Upcoming Rides */
-  const upComing = () => {
-    setUpcomingRides(
-      rides.filter((ride) => Date.parse(ride?.date) > Date.parse(new Date()))
-    );
+  const getFilterCity = (e) => {
+    setActiveFilter(false);
+    setActiveState(false);
+    setActiveCity(false);
+    const newData = { ...filterby };
+    if (e.target.innerText === "All Cities") {
+      newData.city = null;
+      return setFilterby(newData);
+    }
+    newData.city = e.target.innerText;
+    setFilterby(newData);
   };
 
-  /* Filter Past Rides */
-  const past = () => {
-    setPastRides(
-      rides.filter((ride) => Date.parse(ride?.date) < Date.parse(new Date()))
-    );
+  const trigerFilter = () => {
+    if (activeFilter) {
+      setActiveFilter(false);
+      setActiveState(false);
+      setActiveCity(false);
+    } else {
+      setActiveFilter(true);
+    }
+  };
+  const trigerStates = () => {
+    if (activeState) {
+      setActiveState(false);
+    } else {
+      setActiveState(true);
+      setActiveCity(false);
+    }
+  };
+  const trigerCities = () => {
+    if (activeCity) {
+      setActiveCity(false);
+    } else {
+      setActiveCity(true);
+      setActiveState(false);
+    }
+  };
+
+  const getstatesCities = (data) => {
+    const tempStates = [];
+    const tempCities = [];
+    data.forEach((ride) => {
+      if (!tempStates.includes(ride.state)) {
+        tempStates.push(ride.state);
+      }
+      if (!tempCities.includes(ride.city)) {
+        tempCities.push(ride.city);
+      }
+    });
+    setStates(tempStates);
+    setCities(tempCities);
   };
 
   useEffect(() => {
-    if (rides.length === 0) return;
-    nearest();
-    upComing();
-    past();
-  }, [rides]);
+    if (active === "Nearest rides") {
+      setCurrentData(nearestRides);
+      getstatesCities(nearestRides);
+    }
+    if (active === "Upcoming rides") {
+      setCurrentData(upcomingRides);
+      getstatesCities(upcomingRides);
+    }
+    if (active === "Past rides") {
+      setCurrentData(pastRides);
+      getstatesCities(pastRides);
+    }
+  }, [active, nearestRides, upcomingRides, pastRides]);
+
+  useEffect(() => {
+    if (!filterby?.state && filterby?.city) {
+      const filtered = currentData.filter(
+        (data) => data.city === filterby.city
+      );
+      return setShowData(filtered);
+    }
+    if (filterby?.state && !filterby?.city) {
+      const filtered = currentData.filter(
+        (data) => data.state === filterby.state
+      );
+      return setShowData(filtered);
+    }
+    if (filterby?.state && filterby?.city) {
+      const filtered = currentData.filter(
+        (data) => data.city === filterby.city && data.state === filterby.state
+      );
+      return setShowData(filtered);
+    }
+    setShowData(currentData);
+  }, [currentData, filterby]);
+
+  useEffect(() => {
+    const tempCities = [];
+    if (!filterby.state) {
+      currentData.forEach((data) => {
+        if (!tempCities.includes(data.city)) {
+          tempCities.push(data.city);
+        }
+      });
+      return setCities(tempCities);
+    }
+    currentData.forEach((data) => {
+      if (data.state === filterby.state && !tempCities.includes(data.state)) {
+        tempCities.push(data.city);
+      }
+    });
+    setCities(tempCities);
+  }, [filterby.state, currentData]);
 
   return (
     <div className={bodyStyles.bodyMain}>
       <div className={bodyStyles.bodyHeadWrapper}>
-        <div className={bodyStyles.buttonWrapper}>
-          <p
-            onClick={() => setActive("Nearest rides")}
-            className={
-              active === "Nearest rides"
-                ? bodyStyles.buttonActive
-                : bodyStyles.buttonInActive
-            }
-          >
-            Nearest rides
-          </p>
-          <p
-            onClick={() => setActive("Upcoming rides")}
-            className={
-              active === "Upcoming rides"
-                ? bodyStyles.buttonActive
-                : bodyStyles.buttonInActive
-            }
-          >
-            Upcoming rides ({upcomingRides.length})
-          </p>
-          <p
-            onClick={() => setActive("Past rides")}
-            className={
-              active === "Past rides"
-                ? bodyStyles.buttonActive
-                : bodyStyles.buttonInActive
-            }
-          >
-            Past rides ({pastRides.length})
-          </p>
-        </div>
-        <div className={bodyStyles.filterButton}>
-          <FilterLeft />
-          <p>Filters</p>
-        </div>
+        <Navigator
+          active={active}
+          setActive={setActive}
+          upcoming={upcomingRides.length}
+          past={pastRides.length}
+        />
+        <Filter
+          activeFilter={activeFilter}
+          trigerFilter={trigerFilter}
+          trigerStates={trigerStates}
+          activeState={activeState}
+          getFilterState={getFilterState}
+          states={states}
+          trigerCities={trigerCities}
+          activeCity={activeCity}
+          getFilterCity={getFilterCity}
+          cities={cities}
+        />
       </div>
-      {active === "Nearest rides" && <ShowRides rides={nearestRides} />}
-      {active === "Upcoming rides" && <ShowRides rides={upcomingRides} />}
-      {active === "Past rides" && <ShowRides rides={pastRides} />}
+      <ShowRides rides={showData} />
     </div>
   );
 };
