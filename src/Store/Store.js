@@ -6,6 +6,10 @@ const Store = () => {
   const [nearestRides, setNearestRides] = useState([]);
   const [upcomingRides, setUpcomingRides] = useState([]);
   const [pastRides, setPastRides] = useState([]);
+  const [filterby, setFilterby] = useState({
+    state: null,
+    city: null,
+  });
 
   /* Filter Nearest Rides */
   const nearest = (data) => {
@@ -39,18 +43,21 @@ const Store = () => {
     );
   };
 
+  /* Fetch user */
   useEffect(() => {
     fetch("https://assessment.api.vweb.app/user")
       .then((res) => res.json())
       .then((data) => setUser(data));
   }, []);
 
+  /* Fetch Rides */
   useEffect(() => {
     fetch("https://assessment.api.vweb.app/rides")
       .then((res) => res.json())
       .then((data) => setInitialRides(data));
   }, []);
 
+  /* Find closest ride and add a custom id cause fetched data has simillar id on some data */
   useEffect(() => {
     if (!initialRides || !user?.name) return;
 
@@ -75,6 +82,8 @@ const Store = () => {
     nearestRides,
     upcomingRides,
     pastRides,
+    filterby,
+    setFilterby,
   };
 };
 

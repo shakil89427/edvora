@@ -6,74 +6,14 @@ import Filter from "../Filter/Filter";
 import Navigator from "../Navigator/Navigator";
 
 const Body = () => {
-  const { nearestRides, upcomingRides, pastRides } = useStore();
+  const { nearestRides, upcomingRides, pastRides, filterby } = useStore();
   const [currentData, setCurrentData] = useState([]);
   const [showData, setShowData] = useState([]);
   const [states, setStates] = useState([]);
   const [cities, setCities] = useState([]);
   const [active, setActive] = useState("Nearest rides");
-  const [filterby, setFilterby] = useState({
-    state: null,
-    city: null,
-  });
-  const [activeFilter, setActiveFilter] = useState(false);
-  const [activeState, setActiveState] = useState(false);
-  const [activeCity, setActiveCity] = useState(false);
 
-  const getFilterState = (e) => {
-    setActiveFilter(false);
-    setActiveState(false);
-    setActiveCity(false);
-    const newData = { ...filterby };
-    if (e.target.innerText === "All States") {
-      newData.state = null;
-      newData.city = null;
-      return setFilterby(newData);
-    }
-    newData.state = e.target.innerText;
-    newData.city = null;
-    setFilterby(newData);
-  };
-
-  const getFilterCity = (e) => {
-    setActiveFilter(false);
-    setActiveState(false);
-    setActiveCity(false);
-    const newData = { ...filterby };
-    if (e.target.innerText === "All Cities") {
-      newData.city = null;
-      return setFilterby(newData);
-    }
-    newData.city = e.target.innerText;
-    setFilterby(newData);
-  };
-
-  const trigerFilter = () => {
-    if (activeFilter) {
-      setActiveFilter(false);
-      setActiveState(false);
-      setActiveCity(false);
-    } else {
-      setActiveFilter(true);
-    }
-  };
-  const trigerStates = () => {
-    if (activeState) {
-      setActiveState(false);
-    } else {
-      setActiveState(true);
-      setActiveCity(false);
-    }
-  };
-  const trigerCities = () => {
-    if (activeCity) {
-      setActiveCity(false);
-    } else {
-      setActiveCity(true);
-      setActiveState(false);
-    }
-  };
-
+  /* Initially filtering all states and cities */
   const getstatesCities = (data) => {
     const tempStates = [];
     const tempCities = [];
@@ -89,6 +29,7 @@ const Body = () => {
     setCities(tempCities);
   };
 
+  /* Triggering which data to forword for process */
   useEffect(() => {
     if (active === "Nearest rides") {
       setCurrentData(nearestRides);
@@ -104,6 +45,7 @@ const Body = () => {
     }
   }, [active, nearestRides, upcomingRides, pastRides]);
 
+  /* Filtering all data whith states and cities */
   useEffect(() => {
     if (!filterby?.state && filterby?.city) {
       const filtered = currentData.filter(
@@ -126,6 +68,7 @@ const Body = () => {
     setShowData(currentData);
   }, [currentData, filterby]);
 
+  /* Filtering cities from active state */
   useEffect(() => {
     const tempCities = [];
     if (!filterby.state) {
@@ -137,7 +80,7 @@ const Body = () => {
       return setCities(tempCities);
     }
     currentData.forEach((data) => {
-      if (data.state === filterby.state && !tempCities.includes(data.state)) {
+      if (data.state === filterby.state && !tempCities.includes(data.city)) {
         tempCities.push(data.city);
       }
     });
@@ -153,18 +96,7 @@ const Body = () => {
           upcoming={upcomingRides.length}
           past={pastRides.length}
         />
-        <Filter
-          activeFilter={activeFilter}
-          trigerFilter={trigerFilter}
-          trigerStates={trigerStates}
-          activeState={activeState}
-          getFilterState={getFilterState}
-          states={states}
-          trigerCities={trigerCities}
-          activeCity={activeCity}
-          getFilterCity={getFilterCity}
-          cities={cities}
-        />
+        <Filter states={states} cities={cities} />
       </div>
       <ShowRides rides={showData} />
     </div>

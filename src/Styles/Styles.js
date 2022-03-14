@@ -18,6 +18,17 @@ export const navigatorStyles = {
   filterButton: "flex items-center gap-2",
 };
 
+export const filterStyles = {
+  mainActive: "rounded-lg bg-[#131313] w-32 p-2 absolute right-0 top-0",
+  mainInActive: "absolute right-0 top-0",
+  filterDiv: "flex items-center gap-2 pl-2 cursor-pointer",
+  activeWrapper: "bg-[#232323] mt-2 px-1 cursor-pointer relative",
+  mainBtn: "flex items-center justify-between",
+  itemsWrapper:
+    "absolute top-full bg-[#232323] left-0 w-full max-h-64 overflow-y-scroll scrollbar-hide z-10",
+  item: "bg-[#110e0e] text-sm py-1 hover:bg-gray-200 hover:text-black px-1",
+};
+
 export const showRideStyles = {
   main: "flex justify-between bg-[#171717] p-5 my-4 rounded-lg",
   leftMain: "flex items-center gap-4 text-[#b9b4b4]",
